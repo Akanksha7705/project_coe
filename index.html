@@ -12,7 +12,7 @@
             margin: 0;
             padding: 0;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             min-height: 100vh;
         }
@@ -25,17 +25,28 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             border-radius: 8px;
             text-align: center;
+            margin-top: 20px;
         }
 
-        /* Header */
-        .header h1 {
-            color: #333;
-            font-size: 24px;
+        /* Navigation Header */
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 5px;
+            text-align: left;
+            font-size: 20px;
+            width: 100%;
         }
 
-        .header p {
+        header nav {
+            float: right;
+        }
+
+        header nav a {
+            color: white;
+            margin-right: 15px;
+            text-decoration: none;
             font-size: 16px;
-            color: #666;
         }
 
         /* Form Styling */
@@ -94,13 +105,27 @@
 
         /* Footer */
         footer {
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            padding: 10px;
             margin-top: 20px;
-            font-size: 14px;
-            color: #777;
+            width: 100%;
         }
     </style>
 </head>
 <body>
+
+    <!-- Header with Navigation -->
+    <header>
+        <strong>CLV Prediction</strong>
+        <nav>
+            <a href="aboutus.html">About Us</a>
+            <a href="app.html">Home</a>
+            <a href="contactus.html">Contact Us</a>
+        </nav>
+    </header>
+
     <div class="container">
         <header class="header">
             <h1>Customer Lifetime Value Prediction</h1>
@@ -129,12 +154,13 @@
         <div class="prediction-result">
             <p id="predictedCLV">Predicted CLV: $0.00</p>
         </div>
-
-        <footer>
-            <p>&copy; 2025 Customer Insights | All Rights Reserved</p>
-        </footer>
     </div>
-    
+
+    <!-- Footer -->
+    <footer>
+        &copy; 2025 Customer Insights | All Rights Reserved
+    </footer>
+
     <script>
         document.getElementById("clvForm").addEventListener("submit", function(event) {
             event.preventDefault();
@@ -144,7 +170,7 @@
             let customerEngagement = document.getElementById("customerEngagement").value;
 
             fetch("http://127.0.0.1:5000/predict", {
-                method: "POST", 
+                method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
@@ -156,10 +182,11 @@
             })
             .then(response => response.json())
             .then(data => {
-                document.getElementById("predictedCLV").innerText = `Predicted CLV: $${data.predicted_clv}`;
+                document.getElementById("predictedCLV").innerText = `Predicted CLV: $ ${data.predicted_clv}`;
             })
             .catch(error => console.error("Error:", error));
         });
     </script>
+
 </body>
 </html>

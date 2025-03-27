@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Lifetime Value Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 50%;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        label {
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .prediction-result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #00796b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Customer Lifetime Value Prediction</h1>
+
+        <form id="clvForm">
+            <div class="form-group">
+                <label for="purchaseHistory">Purchase History ($)</label>
+                <input type="number" id="purchaseHistory" name="purchaseHistory" required>
+            </div>
+            <div class="form-group">
+                <label for="customerEngagement">Customer Engagement Score</label>
+                <input type="number" step="0.01" id="customerEngagement" name="customerEngagement" required>
+            </div>
+            <button type="submit">Predict CLV</button>
+        </form>
+
+        <div class="prediction-result">
+            <p id="predictedCLV">Predicted CLV: --</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("clvForm").addEventListener("submit", function(event) {
+            event.preventDefault();  // Prevent form from refreshing page
+
+            let purchaseHistory = document.getElementById("purchaseHistory").value;
+            let customerEngagement = document.getElementById("customerEngagement").value;
+
+            fetch("/predict", {  // Ensure this URL is correct
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                purchaseHistory: parseFloat(purchaseHistory),
+                customerEngagement: parseFloat(customerEngagement)
+                })
+            })
+
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById("predictedCLV").innerText = `Error: ${data.error}`;
+                } else {
+                    document.getElementById("predictedCLV").innerText = `Predicted CLV: $${data.predicted_clv.toFixed(2)}`;
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
+    </script>
+</body>
+</html>
