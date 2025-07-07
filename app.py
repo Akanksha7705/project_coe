@@ -1,52 +1,69 @@
-from flask import Flask, jsonify, request, render_template
-import pickle
-import os
-import pandas as pd
+from flask import Flask, render_template, request, redirect, url_for, session
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
+app.secret_key = 'secret-key'
 
-# Define the path where the model is saved
-save_path = os.path.join(os.getcwd(), "clv_model.pkl")
-
-# Load the saved model once when the app starts
-with open(save_path, "rb") as file:
-    loaded_model = pickle.load(file)
-
-print("Model loaded successfully.")
+# Temporary in-memory data stores
+users = {}
+predictions = {}
 
 @app.route('/')
+def login():
+    return render_template('login.html')
+
+@app.route('/register')
+def register():
+    return render_template('register.html')
+
+@app.route('/register', methods=['POST'])
+def register_post():
+    username = request.form['username']
+    password = generate_password_hash(request.form['password'])
+
+    if username in users:
+        return 'User already exists!'
+    users[username] = password
+    predictions[username] = []  # Init empty predictions
+    return redirect(url_for('login'))
+
+@app.route('/login', methods=['POST'])
+def login_post():
+    username = request.form['username']
+    password = request.form['password']
+
+    if username in users and check_password_hash(users[username], password):
+        session['username'] = username
+        return redirect(url_for('home'))
+    return 'Invalid credentials!'
+
+@app.route('/home')
 def home():
-    return render_template('index.html')
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    user = session['username']
+    user_predictions = predictions.get(user, [])
+    return render_template('home.html', predictions=user_predictions)
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    try:
-        data = request.get_json()
+    if 'username' not in session:
+        return redirect(url_for('login'))
 
-        if not data:
-            return jsonify({'error': 'Invalid input, JSON required'}), 400
+    customer_id = request.form['customer_id']
+    result = request.form['prediction']
 
-        # Extract values and ensure they are floats
-        total_purchases = float(data.get('total_purchases', 0))
-        engagement_score = float(data.get('engagement_score', 0))
+    predictions[session['username']].append({
+        'customer_id': customer_id,
+        'result': result
+    })
+    return redirect(url_for('home'))
 
-        # Prepare input for the model
-        input_data = pd.DataFrame({
-            'Total Purchases ($)': [total_purchases],
-            'Engagement Score': [engagement_score]
-        })
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('login'))
 
-        # Make prediction
-        prediction = loaded_model.predict(input_data)
-
-        # Convert NumPy float32 to Python float before returning JSON
-        return jsonify({'prediction': float(prediction[0])})
-
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)
