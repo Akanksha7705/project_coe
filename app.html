@@ -1,78 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Lifetime Value Prediction</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background: url('https://t3.ftcdn.net/jpg/10/85/88/46/360_F_1085884672_JoCaQTdJXFn0s89jbZh2E7vrNpAspfHp.jpg') no-repeat center center fixed;
-            background-size: cover;
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-        .content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 80vh;
-            position: relative;
-        }
-        .btn-get-started {
-            background: rgb(239, 239, 239);
-            color: black;
-            padding: 15px 30px;
-            font-size: 18px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: 0.3s;
-            position: absolute;
-            top: 90%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-        .btn-get-started:hover {
-            background: rgb(232, 131, 15);
-        }
-        .footer {
-            background-color: #0d6efd;
-            color: white;
-            padding: 10px 0;
-            width: 100%;
-            text-align: center;
-            margin-top: auto;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Customer Lifetime Value Prediction</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    body {
+      background: url('https://t3.ftcdn.net/jpg/10/85/88/46/360_F_1085884672_JoCaQTdJXFn0s89jbZh2E7vrNpAspfHp.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Roboto', sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      position: relative;
+      text-align: center;
+      color: white;
+      padding-top: 80px; /* To account for fixed header */
+    }
+
+    .btn-get-started {
+      background: rgb(239, 239, 239);
+      color: black;
+      padding: 15px 20px;
+      font-size: 18px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: transform 0.3s, background 0.3s;
+      position: absolute;
+      top: 83%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-get-started:hover {
+      background: rgb(232, 131, 15);
+      transform: translate(-50%, -50%) scale(1.1);
+    }
+
+    .btn-highlight {
+      background: #0d6efd;
+      color: white;
+      border-radius: 5px;
+      transition: background 0.3s;
+      margin-left: 5px;
+    }
+
+    .btn-highlight:hover {
+      background: #0056b3;
+    }
+
+    .footer {
+      background-color: #0d6efd;
+      color: white;
+      padding: 10px 0;
+      width: 100%;
+      text-align: center;
+    }
+
+    .navbar {
+      transition: background-color 0.3s;
+    }
+
+    .navbar:hover {
+      background-color: rgba(13, 110, 253, 0.8);
+    }
+
+    section {
+      padding: 60px 15px;
+    }
+
+    #aboutus, #contactus {
+      background-color: rgba(255, 255, 255, 0.9);
+    }
+  </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">CLV Prediction</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="aboutus.html">About Us</a></li>
-                    <li class="nav-item"><a class="nav-link" href="contactus.html">Contact</a></li>
-                    <!-- <li class="nav-item"><a class="nav-link btn btn-info btn-get-started" href="#">Login</a></li> -->
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <div class="content">
-        <a href="index.html" class="btn-get-started">Get Started</a>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">CLV Prediction</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link btn-highlight" href="#aboutus">About Us</a></li>
+          <li class="nav-item"><a class="nav-link btn-highlight" href="#contactus">Contact</a></li>
+          <li class="nav-item"><a class="nav-link btn-highlight" href="login.html">Login</a></li>
+        </ul>
+      </div>
     </div>
+  </nav>
 
-    <footer class="footer">
-        &copy; 2025 Customer Insights | All Rights Reserved
-    </footer>
+  <div class="content">
+ 
+    <a href="index (1).html" class="btn-get-started">Get Started</a>
+  </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <section id="aboutus" class="text-center">
+    <div class="container">
+      <h2 class="mb-4">About Us</h2>
+      <p>
+        Customer Lifetime Value (CLV) Prediction is a powerful analytics tool that helps businesses 
+        estimate the total revenue a customer will generate over their lifetime. By leveraging advanced 
+        machine learning models and data-driven insights, we empower businesses to make smarter marketing 
+        decisions, optimize customer retention, and boost profitability.
+      </p>
+      <p>
+        Our mission is to provide businesses with valuable insights to better understand their customers, 
+        enhance personalization, and drive long-term growth.
+      </p>
+    </div>
+  </section>
+<div class="mt-5">
+  <section id="contactus" class="text-center">
+    <div class="container">
+      <h2 class="mb-4">Contact Us</h2>
+      <p>If you have any queries, feel free to reach out to us at:</p>
+      <p><strong>Email:</strong> <a href="mailto:uppalanikhitha0207@gmail.com">uppalanikhitha0207@gmail.com</a></p>
+    </div>
+  </section>
+</div>
+  <footer class="footer fixed-bottom">
+    &copy; 2025 Customer Insights | All Rights Reserved
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
