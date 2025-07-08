@@ -1,42 +1,27 @@
-import pickle
-import numpy as np
-from flask import Flask, request, jsonify 
+from flask import Flask, request, jsonify
 from flask_cors import CORS
+import joblib
 
 app = Flask(__name__)
-CORS(app)  # Allows frontend requests from different origins
-CORS(app, resources={r"/predict": {"origins": "*"}})
+CORS(app)  # Allow requests from HTML running on a different port (like 5500)
 
-with open("clv_model.pkl", "rb") as file:
-    model = pickle.load(file)
-
-@app.route('/')
-def home():
-    return "Flask Backend is Running!"
+model = joblib.load("clv_model.pkl")  # Load your trained model here
 
 @app.route('/predict', methods=['POST'])
-def predict_clv():
+def predict():
+    data = request.get_json()
+    customer_id = data.get('customerID')
+    purchase_amount = data.get('purchaseAmount')
+    engagement_score = data.get('engagementScore')
+
+    if None in (purchase_amount, engagement_score):
+        return jsonify({'error': 'Missing input values'}), 400
+
     try:
-        print("Received request:", request.method)  # Debugging print
-        data = request.get_json()
-        print("Received data:", data)  # Debugging print
-        
-        if not data:
-            return jsonify({"error": "Empty request"}), 400
-
-        customer_id = data.get("customerID", "Unknown")
-        purchase_history = float(data.get("purchaseHistory", 0))
-        customer_engagement = float(data.get("customerEngagement", 0))
-
-        input_data = np.array([[purchase_history, customer_engagement]])
-        predicted_clv = model.predict(input_data)[0]
-
-        return jsonify({"customer_id": customer_id, "predicted_clv": round(predicted_clv, 2)})
-    
+        prediction = model.predict([[purchase_amount, engagement_score]])
+        return jsonify({'predicted_clv': round(prediction[0], 2)})
     except Exception as e:
-        return jsonify({"error": str(e)}), 400
-
-
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
