@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Home</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(to right, #ffecd2, #fcb69f);
+      font-family: 'Segoe UI', sans-serif;
+      padding-top: 60px;
+    }
+    .user-dropdown {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+    .avatar-circle {
+      width: 45px;
+      height: 45px;
+      background-color: #007bff;
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s;
+    }
+    .avatar-circle:hover {
+      transform: scale(1.05);
+    }
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 20px;
+      background-color: #17a2b8;
+      color: white;
+    }
+    .navbar .btn {
+      margin-right: 10px;
+    }
+    .btn-group{
+      margin-right: 0px;
+
+    }
+    .form-section {
+      max-width: 500px;
+      margin: 40px auto;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    footer {
+      margin-top: 50px;
+      text-align: center;
+      font-size: 14px;
+      color: #333;
+    }
+    .table {
+      margin-top: 30px;
+    }
+    .btn-group {
+  display: flex;
+  gap: 5px; /* spacing between buttons */
+  margin-top: 10px;
+}
+
+.btn-group button {
+  padding: 1px 20px;
+  border: none;
+  background-color: #0d6efd;
+  color: white;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-group button:hover {
+  background-color: #001f4e;
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- Top Nav -->
+  <div class="navbar fixed-top">
+    <div class="logo">CLV Predictor</div>
+    <div class="btn-group">
+      <a href="app.html" class="btn btn-info btn-small">Home</a>
+      <a href="aboutus.html" class="btn btn-info">About Us</a>
+      <a href="contactus.html" class="btn btn-info">Contact Us</a>
+    
+    <div class="avatar-circle dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+      <span id="avatarInitials"></span>
+    </div>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+      <li><a class="dropdown-item" href="#" onclick="logout()">Logout</a></li>
+    </ul>
+  </div>
+</div>
+  <!-- Avatar & Dropdown
+  <div class="user-dropdown dropdown">
+    <div class="avatar-circle dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+      <span id="avatarInitials"></span>
+    </div>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+      <li><a class="dropdown-item" href="#" onclick="logout()">Logout</a></li>
+    </ul>
+  </div> -->
+
+  <!-- Greeting -->
+  <div class="container text-center mt-4">
+    <h1>Welcome, <span id="usernameDisplay"></span>!</h1>
+  </div>
+
+  <!-- CLV Predictor Form -->
+  <div class="form-section">
+    <h4 class="text-center">Predict Customer Lifetime Value</h4>
+    <form id="clvForm">
+      <label for="customerID">Customer ID:</label>
+      <input type="text" id="customerID" class="form-control mb-3" required>
+
+      <label for="purchaseHistory">Purchase History:</label>
+      <input type="text" id="purchaseHistory" class="form-control mb-3" required>
+
+      <label for="customerEngagement">Customer Engagement:</label>
+      <input type="text" id="customerEngagement" class="form-control mb-3" required>
+
+      <button type="submit" class="btn btn-info w-100">Predict</button>
+    </form>
+
+    <h5 class="mt-4" id="result"></h5>
+  </div>
+
+  <!-- Stored Predictions Table -->
+  <div class="container">
+    <h4>Predicted CLVs</h4>
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Customer ID</th>
+          <th>Predicted CLV</th>
+        </tr>
+      </thead>
+      <tbody id="clvList"></tbody>
+    </table>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 CLV Predictor | All rights reserved.</p>
+  </footer>
+
+  <script>
+    const user = localStorage.getItem("loggedInUser");
+    if (!user) {
+      alert("Please login first.");
+      window.location.href = "login.html";
+    }
+
+    document.getElementById("usernameDisplay").textContent = user;
+
+    function getInitials(name) {
+      if (!name) return "U";
+      const parts = name.split("@")[0].split(/[\s._-]+/); 
+      const initials = parts.map(part => part[0]?.toUpperCase()).join("").slice(0, 2);
+      return initials || "U";
+    }
+
+    document.getElementById("avatarInitials").textContent = getInitials(user);
+
+    function logout() {
+      localStorage.removeItem("loggedInUser");
+      window.location.href = "login.html";
+    }
+
+    // CLV Prediction & Storage
+    const form = document.getElementById('clvForm');
+    const clvList = document.getElementById('clvList');
+    const result = document.getElementById('result');
+
+    // Load stored data
+    const clvData = JSON.parse(localStorage.getItem(`clvData_${user}`)) || [];
+
+    function updateTable() {
+      clvList.innerHTML = "";
+      clvData.forEach(entry => {
+        clvList.innerHTML += `<tr><td>${entry.customerID}</td><td>$${entry.predicted_clv}</td></tr>`;
+      });
+    }
+
+    updateTable();
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const data = {
+        customerID: document.getElementById('customerID').value,
+        purchaseHistory: document.getElementById('purchaseHistory').value,
+        customerEngagement: document.getElementById('customerEngagement').value
+      };
+
+      fetch('http://127.0.0.1:5000/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(resultData => {
+        result.textContent = 'Predicted CLV: $' + resultData.predicted_clv;
+
+        // Save to localStorage
+        clvData.push({ customerID: data.customerID, predicted_clv: resultData.predicted_clv });
+        localStorage.setItem(`clvData_${user}`, JSON.stringify(clvData));
+        updateTable();
+      })
+      .catch(error => {
+        result.textContent = 'Error: ' + error;
+      });
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

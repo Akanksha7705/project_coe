@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login Page</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(to right, #00c6ff, #0072ff);
+      color: white;
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .login-box {
+      background: rgba(0,0,0,0.5);
+      padding: 30px;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 400px;
+    }
+    .form-control {
+      margin-bottom: 15px;
+    }
+    #message {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    .text-success { color: #00ffcc; }
+    .text-error { color: #ff6666; }
+    .small-link {
+      text-decoration: underline;
+      color: #e0e0e0;
+      cursor: pointer;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <h2 class="text-center">Login / Sign Up</h2>
+
+    <input type="text" id="username" class="form-control" placeholder="Username" required>
+    <input type="password" id="password" class="form-control" placeholder="Password" required>
+    <input type="password" id="confirmPassword" class="form-control d-none" placeholder="Confirm Password">
+
+    <button class="btn btn-success w-100" onclick="login()">Login</button>
+    <button class="btn btn-light w-100 mt-2" onclick="toggleSignup()">Sign Up</button>
+    <button class="btn btn-primary w-100 mt-2 d-none" id="confirmSignup" onclick="signup()">Confirm Sign Up</button>
+
+    <p class="text-center mt-2"><span class="small-link" onclick="toggleForgot()">Forgot Password?</span></p>
+    
+    <div id="forgotSection" class="d-none">
+      <input type="password" id="newPassword" class="form-control" placeholder="New Password">
+      <input type="password" id="confirmNewPassword" class="form-control" placeholder="Confirm New Password">
+      <button class="btn btn-warning w-100 mt-2" onclick="resetPassword()">Reset Password</button>
+    </div>
+
+    <p id="message" class="text-center mt-3"></p>
+  </div>
+
+  <script>
+    function getUserData() {
+      return JSON.parse(localStorage.getItem("users")) || {};
+    }
+
+    function saveUserData(users) {
+      localStorage.setItem("users", JSON.stringify(users));
+    }
+
+    function showMessage(text, isError = false) {
+      const msg = document.getElementById("message");
+      msg.textContent = text;
+      msg.className = isError ? "text-center text-error" : "text-center text-success";
+    }
+
+    function toggleSignup() {
+      document.getElementById("confirmPassword").classList.remove("d-none");
+      document.getElementById("confirmSignup").classList.remove("d-none");
+      showMessage("Enter details and click Confirm Sign Up.");
+    }
+
+    function signup() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+
+      if (!username || !password || !confirmPassword) {
+        showMessage("Please fill in all fields.", true);
+        return;
+      }
+
+      if (password.length < 6) {
+        showMessage("Password should be at least 6 characters.", true);
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        showMessage("Passwords do not match.", true);
+        return;
+      }
+
+      const users = getUserData();
+      if (users[username]) {
+        showMessage("User already exists!", true);
+        return;
+      }
+
+      users[username] = password;
+      saveUserData(users);
+      showMessage("Signup successful! Please login.");
+    }
+
+    function login() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value;
+
+      const users = getUserData();
+      if (users[username] && users[username] === password) {
+        showMessage("Login successful! Redirecting...");
+        localStorage.setItem("loggedInUser", username);
+        setTimeout(() => {
+          window.location.href = "home.html";
+        }, 1000);
+      } else {
+        showMessage("Invalid credentials.", true);
+      }
+    }
+
+    function toggleForgot() {
+      document.getElementById("confirmPassword").classList.add("d-none");
+      document.getElementById("confirmSignup").classList.add("d-none");
+      document.getElementById("forgotSection").classList.toggle("d-none");
+      showMessage("Enter your username and new password to reset.");
+    }
+
+    function resetPassword() {
+      const username = document.getElementById("username").value.trim();
+      const newPassword = document.getElementById("newPassword").value;
+      const confirmNewPassword = document.getElementById("confirmNewPassword").value;
+
+      const users = getUserData();
+      if (!users[username]) {
+        showMessage("Username not found.", true);
+        return;
+      }
+
+      if (newPassword.length < 6) {
+        showMessage("Password should be at least 6 characters.", true);
+        return;
+      }
+
+      if (newPassword !== confirmNewPassword) {
+        showMessage("Passwords do not match.", true);
+        return;
+      }
+
+      users[username] = newPassword;
+      saveUserData(users);
+      showMessage("Password reset successful. You can login now.");
+    }
+  </script>
+</body>
+</html>
