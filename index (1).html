@@ -2,106 +2,70 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Lifetime Value Prediction</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .container {
-            width: 50%;
-            background: white;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
-            text-align: center;
-        }
-        h1 {
-            color: #333;
-        }
-        .form-group {
-            margin-bottom: 15px;
-            text-align: left;
-        }
-        label {
-            font-weight: bold;
-        }
-        input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 12px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .prediction-result {
-            margin-top: 20px;
-            font-size: 18px;
-            font-weight: bold;
-            color: #00796b;
-        }
-    </style>
+    <title>Customer CLV Predictor</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Customer Lifetime Value Prediction</h1>
 
+    <header>
+        <div class="navbar">
+            <div class="logo">CLV Predictor</div>
+            <div class="btn-group" role="group">
+                <a href="app.html" class="btn btn-info">Home</a>
+                <!-- <a href="#" class="btn btn-info">Login</a>
+                <a href="#" class="btn btn-info">Register</a> -->
+                <a href="aboutus.html" class="btn btn-info">About Us</a>
+                <a href="contactus.html" class="btn btn-info ">Contact Us</a>
+            </div>
+            
+        </div>
+    </header>
+
+    <main class="container">
+        <h2>Predict Customer Lifetime Value</h2>
         <form id="clvForm">
-            <div class="form-group">
-                <label for="purchaseHistory">Purchase History ($)</label>
-                <input type="number" id="purchaseHistory" name="purchaseHistory" required>
-            </div>
-            <div class="form-group">
-                <label for="customerEngagement">Customer Engagement Score</label>
-                <input type="number" step="0.01" id="customerEngagement" name="customerEngagement" required>
-            </div>
-            <button type="submit">Predict CLV</button>
+            <label for="customerID">Customer ID:</label>
+            <input type="text" id="customerID" required>
+
+            <label for="purchaseHistory">Purchase History:</label>
+            <input type="text" id="purchaseHistory" required>
+
+            <label for="customerEngagement">Customer Engagement:</label>
+            <input type="text" id="customerEngagement" required>
+
+            <button type="submit" class="btn btn-info">Predict</button>
         </form>
 
-        <div class="prediction-result">
-            <p id="predictedCLV">Predicted CLV: --</p>
-        </div>
-    </div>
+        <h3 id="result"></h3>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 CLV Predictor | All rights reserved.</p>
+    </footer>
 
     <script>
-        document.getElementById("clvForm").addEventListener("submit", function(event) {
-            event.preventDefault();  // Prevent form from refreshing page
+        document.getElementById('clvForm').addEventListener('submit', function(e) {
+            e.preventDefault();
 
-            let purchaseHistory = document.getElementById("purchaseHistory").value;
-            let customerEngagement = document.getElementById("customerEngagement").value;
+            const data = {
+                customerID: document.getElementById('customerID').value,
+                purchaseHistory: document.getElementById('purchaseHistory').value,
+                customerEngagement: document.getElementById('customerEngagement').value
+            };
 
-            fetch("/predict", {  // Ensure this URL is correct
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                purchaseHistory: parseFloat(purchaseHistory),
-                customerEngagement: parseFloat(customerEngagement)
-                })
+            fetch('http://127.0.0.1:5000/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
             })
-
             .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    document.getElementById("predictedCLV").innerText = `Error: ${data.error}`;
-                } else {
-                    document.getElementById("predictedCLV").innerText = `Predicted CLV: $${data.predicted_clv.toFixed(2)}`;
-                }
+            .then(result => {
+                document.getElementById('result').textContent = 'Predicted CLV: $' + result.predicted_clv;
             })
-            .catch(error => console.error("Error:", error));
+            .catch(error => {
+                document.getElementById('result').textContent = 'Error: ' + error;
+            });
         });
     </script>
 </body>
